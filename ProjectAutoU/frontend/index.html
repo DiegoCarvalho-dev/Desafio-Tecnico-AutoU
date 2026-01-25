@@ -3,36 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project AutoU</title>
+    <title>Classificador de E-mails - AutoU</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
 </head>
 <body>
+    <div class="container">
+        <header class="header">
+            <h1 class="main-title">Classificador de E-mails</h1>
+            <p class="subtitle">Sistema de análise e classificação automática</p>
+        </header>
 
-    <header>
-        <h1>Project AutoU</h1>
-        <p>Automação inteligente com IA</p>
-    </header>
+        <main>
+            <section class="intro card-white">
+                <h2>Como funciona?</h2>
+                <p>O sistema analisa o conteúdo dos e-mails e os classifica em duas categorias:</p>
+                <div class="categories">
+                    <div class="category">
+                        <span class="category-tag produtivo">Produtivo</span>
+                        <p>E-mails que requerem resposta ou ação, como solicitações, dúvidas ou problemas.</p>
+                    </div>
+                    <div class="category">
+                        <span class="category-tag improdutivo">Improdutivo</span>
+                        <p>E-mails que não necessitam de ação imediata, como saudações ou agradecimentos.</p>
+                    </div>
+                </div>
+                <p>Após a classificação, uma resposta apropriada é sugerida automaticamente.</p>
+            </section>
 
-    <main>
-        <section>
-            <h2>Enviar solicitação</h2>
+            <section class="analysis card-light">
+                <h2>Analisar E-mail</h2>
 
-            <form id="request-form">
-                <label for="email">E-mail</label><br>
-                <input type="email" id="email" name="email" required><br><br>
+                <form id="request-form">
+                    <div class="input-type">
+                        <button type="button" class="type-btn active" id="text-btn">Texto Direto</button>
+                        <button type="button" class="type-btn" id="file-btn">Upload de Arquivo</button>
+                    </div>
 
-                <label for="mensagem">Mensagem</label><br>
-                <textarea id="mensagem" name="mensagem" rows="4" required></textarea><br><br>
+                    <div class="input-field" id="text-field">
+                        <label for="message">Conteúdo do E-mail:</label>
+                        <textarea
+                            id="message"
+                            name="message"
+                            rows="7"
+                            placeholder="Cole o conteúdo do e-mail aqui..."
+                        ></textarea>
+                        <div class="char-counter"><span id="char-count">0</span> caracteres</div>
+                    </div>
 
-                <button type="submit">Enviar</button>
-            </form>
-        </section>
-    </main>
+                    <div class="input-field hidden" id="file-field">
+                        <label>Upload de Arquivo:</label>
+                        <div class="file-container">
+                            <input type="file" id="file" accept=".txt,.pdf">
+                            <div class="file-wrapper">
+                                <label for="file" class="file-label" id="file-label">Selecionar Arquivo</label>
+                                <button type="button" class="remove-btn hidden" id="remove-file" title="Remover arquivo">×</button>
+                            </div>
+                            <span id="file-name">Nenhum arquivo selecionado</span>
+                        </div>
+                        <p class="file-info">Formatos aceitos: .txt, .pdf (máx. 5MB)</p>
+                    </div>
 
-    <footer>
-        <p>© 2026 - Project AutoU</p>
-    </footer>
+                    <button type="submit" class="submit-btn">
+                        <span id="btn-text">Classificar E-mail</span>
+                        <span id="btn-loading" class="hidden">Processando...</span>
+                    </button>
+                </form>
 
+                <div class="results card-white" id="results">
+                    <h3>Resultado da Análise</h3>
+
+                    <div class="result-item">
+                        <h4>Categoria:</h4>
+                        <div class="category-result" id="category-result">
+                            <span id="category">Aguardando análise...</span>
+                        </div>
+                    </div>
+
+                    <div class="result-item">
+                        <h4>Resposta Sugerida:</h4>
+                        <div class="response" id="response">
+                            <p id="suggested-response">A resposta será gerada após a análise.</p>
+                        </div>
+                        <button class="copy-btn" id="copy-btn">Copiar Resposta</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>© 2026 AutoU - Sistema de Classificação de E-mails</p>
+            <p class="project-info">Projeto técnico para análise automática de conteúdo</p>
+        </footer>
+    </div>
+
+    <!-- Modal para mensagens - NOVO -->
+    <div class="modal hidden" id="message-modal">
+        <div class="modal-content">
+            <p id="modal-text"></p>
+            <button class="modal-btn" id="modal-close">OK</button>
+        </div>
+    </div>
 </body>
 </html>

@@ -1,29 +1,28 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-router = APIRouter(
-    prefix="/email",
-    tags=["Email"]
-)
+router = APIRouter(prefix="/email", tags=["Email"])
 
-class EmailEntrada(BaseModel):
+
+class EmailRequest(BaseModel):
     texto: str
 
 
-class EmailResposta(BaseModel):
+class EmailResponse(BaseModel):
     categoria: str
     resposta_sugerida: str
 
 
-@router.post("/analisar", response_model=EmailResposta)
-def analisar_email(email: EmailEntrada):
+@router.post("/analisar", response_model=EmailResponse)
+def analisar_email(dados: EmailRequest):
+    texto = dados.texto.lower()
 
-    if "obrigado" in email.texto.lower() or "feliz" in email.texto.lower():
-        categoria = "Improdutivo"
-        resposta = "Agradecemos o contato! Desejamos um ótimo dia."
-    else:
+    if any(palavra in texto for palavra in ["solicito", "problema", "erro", "status", "suporte"]):
         categoria = "Produtivo"
-        resposta = "Recebemos sua solicitação e em breve retornaremos com mais informações."
+        resposta = "Recebemos sua solicitação e ela será analisada em breve."
+    else:
+        categoria = "Improdutivo"
+        resposta = "Agradecemos sua mensagem!"
 
     return {
         "categoria": categoria,

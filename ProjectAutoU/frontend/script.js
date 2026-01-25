@@ -13,12 +13,12 @@ const categorySpan = document.getElementById("category");
 const categoryResult = document.getElementById("category-result");
 const suggestedResponse = document.getElementById("suggested-response");
 const copyBtn = document.getElementById("copy-btn");
-const btnText = document.getElementById("btn-text");
-const btnLoading = document.getElementById("btn-loading");
+const submitBtn = document.querySelector(".submit-btn");
 const modal = document.getElementById("message-modal");
 const modalText = document.getElementById("modal-text");
 const modalClose = document.getElementById("modal-close");
 
+const resultsSection = document.getElementById("results");
 
 textBtn.addEventListener("click", () => {
     textBtn.classList.add("active");
@@ -60,13 +60,8 @@ removeFileBtn.addEventListener("click", () => {
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    categorySpan.textContent = "Analisando...";
-    categoryResult.className = "category-result";
-    suggestedResponse.textContent = "Processando resposta...";
-    copyBtn.disabled = true;
-
-    btnText.classList.add("hidden");
-    btnLoading.classList.remove("hidden");
+    limparResultado();
+    submitBtn.classList.add("loading");
 
     let textoEmail = "";
 
@@ -75,7 +70,7 @@ form.addEventListener("submit", async (event) => {
 
         if (!textoEmail) {
             mostrarModal("Digite o conteúdo do e-mail para análise.");
-            resetarBotao();
+            finalizarLoading();
             return;
         }
     }
@@ -83,7 +78,7 @@ form.addEventListener("submit", async (event) => {
     if (fileBtn.classList.contains("active")) {
         if (!fileInput.files.length) {
             mostrarModal("Selecione um arquivo para análise.");
-            resetarBotao();
+            finalizarLoading();
             return;
         }
 
@@ -91,7 +86,7 @@ form.addEventListener("submit", async (event) => {
 
         if (!file.name.endsWith(".txt")) {
             mostrarModal("No momento, apenas arquivos .txt são suportados.");
-            resetarBotao();
+            finalizarLoading();
             return;
         }
 
@@ -101,17 +96,17 @@ form.addEventListener("submit", async (event) => {
     try {
         const response = await fetch("http://127.0.0.1:8000/email/analisar", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ texto: textoEmail })
         });
 
         if (!response.ok) {
-            throw new Error("Erro ao analisar o e-mail.");
+            throw new Error();
         }
 
         const data = await response.json();
+
+        resultsSection.scrollIntoView({ behavior: "smooth" });
 
         categorySpan.textContent = data.categoria;
         suggestedResponse.textContent = data.resposta_sugerida;
@@ -119,14 +114,16 @@ form.addEventListener("submit", async (event) => {
 
         if (data.categoria.toLowerCase().includes("produt")) {
             categoryResult.classList.add("produtivo");
+            mostrarFeedback("E-mail classificado como produtivo.", "success");
         } else {
             categoryResult.classList.add("improdutivo");
+            mostrarFeedback("E-mail classificado como improdutivo.", "warning");
         }
 
-    } catch (error) {
-        mostrarModal("Erro ao se comunicar com a API.");
+    } catch {
+        mostrarFeedback("Erro ao se comunicar com a API.", "error");
     } finally {
-        resetarBotao();
+        finalizarLoading();
     }
 });
 
@@ -144,7 +141,23 @@ modalClose.addEventListener("click", () => {
     modal.classList.add("hidden");
 });
 
-function resetarBotao() {
-    btnLoading.classList.add("hidden");
-    btnText.classList.remove("hidden");
+function finalizarLoading() {
+    submitBtn.classList.remove("loading");
+}
+
+function limparResultado() {
+    categorySpan.textContent = "Analisando...";
+    categoryResult.className = "category-result";
+    suggestedResponse.textContent = "Processando resposta...";
+    copyBtn.disabled = true;
+}
+
+function mostrarFeedback(texto, tipo) {
+    const feedback = document.createElement("div");
+    feedback.className = `feedback ${tipo}`;
+    feedback.textContent = texto;
+
+    resultsSection.prepend(feedback);
+
+    setTimeout(() => feedback.remove(), 4000);
 }

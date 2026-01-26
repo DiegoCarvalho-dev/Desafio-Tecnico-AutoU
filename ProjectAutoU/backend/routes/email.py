@@ -1,25 +1,22 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from backend.servicos.email_service import analisar_email
+from servicos.email_service import analisar_email
 
-router = APIRouter(prefix="/email", tags=["Email"])
+router = APIRouter()
 
 
-class EmailEntrada(BaseModel):
+class EmailRequest(BaseModel):
     texto: str
 
 
-class EmailResposta(BaseModel):
-    categoria: str
-    resposta_sugerida: str
-
-
-@router.post("/analisar", response_model=EmailResposta)
-def analisar(email: EmailEntrada):
-    categoria, resposta = analisar_email(email.texto)
-
-    return {
-        "categoria": categoria,
-        "resposta_sugerida": resposta
-    }
+@router.post("/email/analisar")
+def analisar(request: EmailRequest):
+    try:
+        resultado = analisar_email(request.texto)
+        return resultado
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail="Erro ao analisar o e-mail"
+        )

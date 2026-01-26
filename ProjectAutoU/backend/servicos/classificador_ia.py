@@ -43,4 +43,3 @@ Responda EXCLUSIVAMENTE no formato JSON abaixo, sem texto adicional:
         "categoria": "produtivo",
         "motivo": "Mensagem solicita ação ou resposta"
     }
-

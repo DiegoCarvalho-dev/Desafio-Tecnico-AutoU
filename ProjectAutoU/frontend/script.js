@@ -65,6 +65,7 @@ form.addEventListener("submit", async (event) => {
 
     let textoEmail = "";
 
+    /* Texto direto */
     if (textBtn.classList.contains("active")) {
         textoEmail = textarea.value.trim();
 
@@ -93,6 +94,12 @@ form.addEventListener("submit", async (event) => {
         textoEmail = await file.text();
     }
 
+    if (textoEmail.length < 10) {
+        mostrarModal("O conteúdo do e-mail é muito curto para análise.");
+        finalizarLoading();
+        return;
+    }
+
     try {
         const response = await fetch(`${CONFIG.API_BASE_URL}/email/analisar`, {
             method: "POST",
@@ -101,7 +108,8 @@ form.addEventListener("submit", async (event) => {
         });
 
         if (!response.ok) {
-            throw new Error();
+            const erro = await response.json();
+            throw new Error(erro.detail || "Erro ao processar a solicitação.");
         }
 
         const data = await response.json();
@@ -120,8 +128,8 @@ form.addEventListener("submit", async (event) => {
             mostrarFeedback("E-mail classificado como improdutivo.", "warning");
         }
 
-    } catch {
-        mostrarFeedback("Erro ao se comunicar com a API.", "error");
+    } catch (error) {
+        mostrarFeedback(error.message || "Erro ao se comunicar com a API.", "error");
     } finally {
         finalizarLoading();
     }

@@ -120,12 +120,16 @@ form.addEventListener("submit", async (event) => {
         suggestedResponse.textContent = data.resposta_sugerida;
         copyBtn.disabled = false;
 
-        if (data.categoria.toLowerCase().includes("produt")) {
+        const categoria = data.categoria.toLowerCase().trim();
+
+        if (categoria === "produtivo") {
             categoryResult.classList.add("produtivo");
             mostrarFeedback("E-mail classificado como produtivo.", "success");
-        } else {
+        } else if (categoria === "improdutivo") {
             categoryResult.classList.add("improdutivo");
             mostrarFeedback("E-mail classificado como improdutivo.", "warning");
+        } else {
+            mostrarFeedback("Categoria não reconhecida.", "error");
         }
 
     } catch (error) {

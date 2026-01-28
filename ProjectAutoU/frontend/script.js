@@ -165,6 +165,11 @@ function limparResultado() {
 }
 
 function mostrarFeedback(texto, tipo) {
+    const feedbackExistente = resultsSection.querySelector(".feedback");
+    if (feedbackExistente) {
+        feedbackExistente.remove();
+    }
+
     const feedback = document.createElement("div");
     feedback.className = `feedback ${tipo}`;
     feedback.textContent = texto;
@@ -173,3 +178,4 @@ function mostrarFeedback(texto, tipo) {
 
     setTimeout(() => feedback.remove(), 4000);
 }
+
